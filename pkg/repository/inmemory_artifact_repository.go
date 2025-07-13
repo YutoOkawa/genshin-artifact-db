@@ -61,3 +61,16 @@ func (repo *InMemoryArtifactRepository) SaveArtifact(artifact *entity.Artifact) 
 	repo.artifacts[artifact.ID] = artifact
 	return nil
 }
+
+func (repo *InMemoryArtifactRepository) DeleteArtifactByID(id string) error {
+	if id == "" {
+		return ErrArtifactIDIsEmpty
+	}
+
+	if _, exists := repo.artifacts[id]; !exists {
+		return ErrArtifactNotFound
+	}
+
+	delete(repo.artifacts, id)
+	return nil
+}

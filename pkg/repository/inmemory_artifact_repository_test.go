@@ -229,3 +229,56 @@ func TestInMemoryArtifactRepositorySaveArtifact(t *testing.T) {
 		})
 	}
 }
+
+func TestInMemoryArtifactRepositoryDeleteArtifactByID(t *testing.T) {
+	tests := []struct {
+		name string
+
+		mockArtifacts map[string]*entity.Artifact
+
+		artifactID string
+
+		expectedError error
+	}{
+		{
+			name: "ShouldInMemoryArtifactRepositoryDeleteArtifactByIDSuccessfully",
+
+			mockArtifacts: map[string]*entity.Artifact{
+				"test-id": {
+					ID: "test-id",
+				},
+			},
+
+			artifactID: "test-id",
+
+			expectedError: nil,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryReturnErrorWhenArtifactNotFound",
+
+			mockArtifacts: map[string]*entity.Artifact{
+				"test-id": {
+					ID: "test-id",
+				},
+			},
+
+			artifactID: "non-existent-id",
+
+			expectedError: ErrArtifactNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := InMemoryArtifactRepository{
+				artifacts: tt.mockArtifacts,
+			}
+
+			err := repo.DeleteArtifactByID(tt.artifactID)
+
+			if !errors.Is(err, tt.expectedError) {
+				t.Errorf("expected error: %v, got: %v", tt.expectedError, err)
+			}
+		})
+	}
+}
