@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestInMemoryArtifactRepositoryGetArtifactByIO(t *testing.T) {
+func TestInMemoryArtifactRepositoryGetArtifactByID(t *testing.T) {
 	testArtifact := &entity.Artifact{
 		ID: "test-id",
 	}
@@ -40,6 +40,18 @@ func TestInMemoryArtifactRepositoryGetArtifactByIO(t *testing.T) {
 			},
 
 			artifactID: "non-existent-id",
+
+			expectedArtifact: nil,
+			expectedError:    true,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryReturnErrorWhenArtifactIDIsEmpty",
+
+			mockArtifact: map[string]*entity.Artifact{
+				"test-id": testArtifact,
+			},
+
+			artifactID: "",
 
 			expectedArtifact: nil,
 			expectedError:    true,

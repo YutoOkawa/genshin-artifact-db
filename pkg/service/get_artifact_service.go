@@ -26,8 +26,5 @@ func NewGetArtifactService(arrifactGetter repository.ArtifactGetter) *GetArtifac
 }
 
 func (s *GetArtifactService) GetArtifactByID(id string) (*entity.Artifact, error) {
-	if id == "" {
-		return nil, ErrArtifactIDIsEmpty
-	}
 	return s.arrifactGetter.GetArtifactByID(id)
 }

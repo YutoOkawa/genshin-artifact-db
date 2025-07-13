@@ -23,6 +23,10 @@ func NewInMemoryArtifactRepository() *InMemoryArtifactRepository {
 }
 
 func (repo *InMemoryArtifactRepository) GetArtifactByID(id string) (*entity.Artifact, error) {
+	if id == "" {
+		return nil, ErrArtifactIDIsEmpty
+	}
+
 	artifact, exists := repo.Artifacts[id]
 	if !exists {
 		return nil, ErrArtifactNotFound
