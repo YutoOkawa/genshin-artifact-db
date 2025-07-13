@@ -97,8 +97,8 @@ func (s *GetArtifactService) GetArtifactByTypeAndSet(artifactType entity.Artifac
 	return artifactDTOs, nil
 }
 
-func (s *GetArtifactService) GetArtifactByType(artifactType entity.ArtifactType) ([]*ArtifactDTO, error) {
-	artifacts, err := s.arrifactGetter.GetArtifactByType(artifactType)
+func (s *GetArtifactService) GetArtifactsByType(artifactType string) ([]*ArtifactDTO, error) {
+	artifacts, err := s.arrifactGetter.GetArtifactByType(entity.ArtifactType(artifactType))
 	if err != nil {
 		return nil, err
 	}
