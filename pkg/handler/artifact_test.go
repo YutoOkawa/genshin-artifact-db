@@ -287,3 +287,97 @@ func TestGetArtifactsBySet(t *testing.T) {
 		})
 	}
 }
+
+func TestGetArtifactsByTypeAndSet(t *testing.T) {
+	testArtifact := &service.ArtifactDTO{
+		Set:   "test-set",
+		Type:  "test-type",
+		Level: 0,
+		PrimaryStat: service.StatusDTO{
+			Type:  "test-type",
+			Value: 0,
+		},
+		SubStat: []service.StatusDTO{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
+	}
+
+	tests := []struct {
+		name string
+
+		mockGetArtifactByTypeAndSetResponse []*service.ArtifactDTO
+		mockGetArtifactByTypeAndSetError    error
+
+		artifactType string
+		artifactSet  string
+
+		expectedStatusCode int
+		expectedResponse   string
+	}{
+		{
+			name: "ShouldGetArtifactByTypeAndSetSuccessfully",
+
+			mockGetArtifactByTypeAndSetResponse: []*service.ArtifactDTO{testArtifact},
+
+			artifactType: "test-type",
+			artifactSet:  "test-set",
+
+			expectedStatusCode: 200,
+			expectedResponse: func() string {
+				response, _ := json.Marshal([]*service.ArtifactDTO{testArtifact})
+				return string(response)
+			}(),
+		},
+		{
+			name: "ShouldReturnErrorWhenArtifactNotFound",
+
+			mockGetArtifactByTypeAndSetResponse: nil,
+			mockGetArtifactByTypeAndSetError:    repository.ErrArtifactNotFound,
+
+			artifactType: "non-existent-type",
+			artifactSet:  "non-existent-set",
+
+			expectedStatusCode: 404,
+			expectedResponse:   `{"error":"artifact not found"}`,
+		},
+		{
+			name: "ShouldReturnErrorWhenGetArtifactByTypeAndSetFails",
+
+			mockGetArtifactByTypeAndSetResponse: nil,
+			mockGetArtifactByTypeAndSetError:    errors.New("internal server error"),
+
+			artifactType: "test-type",
+			artifactSet:  "test-set",
+
+			expectedStatusCode: 500,
+			expectedResponse:   `{"error":"Internal server error"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &service.MockGetArtifactByTypeAndSetService{
+				MockArtifacts:                    tt.mockGetArtifactByTypeAndSetResponse,
+				MockGetArtifactByTypeAndSetError: tt.mockGetArtifactByTypeAndSetError,
+			}
+			gin.SetMode(gin.TestMode)
+			r := gin.Default()
+			r.GET("/artifacts/type/:type/set/:set", GetArtifacts(service))
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", fmt.Sprintf("/artifacts/type/%s/set/%s", tt.artifactType, tt.artifactSet), nil)
+			r.ServeHTTP(w, req)
+
+			if w.Code != tt.expectedStatusCode {
+				t.Errorf("Expected status code %d, got %d", tt.expectedStatusCode, w.Code)
+			}
+
+			if diff := cmp.Diff(tt.expectedResponse, w.Body.String()); diff != "" {
+				t.Errorf("Response mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

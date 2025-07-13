@@ -23,7 +23,7 @@ type GetArtifactServiceInterface interface {
 }
 
 type GetArtifactsServiceInterface interface {
-	GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error)
+	GetArtifactByTypeAndSet(artifactType, artifactSet string) ([]*ArtifactDTO, error)
 }
 
 type GetArtifactsByTypeServiceInterface interface {
@@ -72,8 +72,8 @@ func (s *GetArtifactService) GetArtifact(id string) (*ArtifactDTO, error) {
 	return artifactDTO, nil
 }
 
-func (s *GetArtifactService) GetArtifactsByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error) {
-	artifacts, err := s.arrifactGetter.GetArtifactByTypeAndSet(artifactType, artifactSet)
+func (s *GetArtifactService) GetArtifactsByTypeAndSet(artifactType, artifactSet string) ([]*ArtifactDTO, error) {
+	artifacts, err := s.arrifactGetter.GetArtifactByTypeAndSet(entity.ArtifactType(artifactType), entity.ArtifactSet(artifactSet))
 	if err != nil {
 		return nil, err
 	}
