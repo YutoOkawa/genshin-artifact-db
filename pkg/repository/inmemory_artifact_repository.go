@@ -13,17 +13,17 @@ var (
 )
 
 type InMemoryArtifactRepository struct {
-	artifacts map[string]*entity.Artifact
+	Artifacts map[string]*entity.Artifact
 }
 
 func NewInMemoryArtifactRepository() *InMemoryArtifactRepository {
 	return &InMemoryArtifactRepository{
-		artifacts: make(map[string]*entity.Artifact),
+		Artifacts: make(map[string]*entity.Artifact),
 	}
 }
 
 func (repo *InMemoryArtifactRepository) GetArtifactByID(id string) (*entity.Artifact, error) {
-	artifact, exists := repo.artifacts[id]
+	artifact, exists := repo.Artifacts[id]
 	if !exists {
 		return nil, ErrArtifactNotFound
 	}
@@ -32,7 +32,7 @@ func (repo *InMemoryArtifactRepository) GetArtifactByID(id string) (*entity.Arti
 
 func (repo *InMemoryArtifactRepository) GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*entity.Artifact, error) {
 	var result []*entity.Artifact
-	for _, artifact := range repo.artifacts {
+	for _, artifact := range repo.Artifacts {
 		if artifact.Type == artifactType && artifact.ArtifactSet == artifactSet {
 			result = append(result, artifact)
 		}
@@ -54,11 +54,11 @@ func (repo *InMemoryArtifactRepository) SaveArtifact(artifact *entity.Artifact) 
 		return ErrArtifactIDIsEmpty
 	}
 
-	if _, exists := repo.artifacts[artifact.ID]; exists {
+	if _, exists := repo.Artifacts[artifact.ID]; exists {
 		return ErrArtifactAlreadyExists
 	}
 
-	repo.artifacts[artifact.ID] = artifact
+	repo.Artifacts[artifact.ID] = artifact
 	return nil
 }
 
@@ -67,10 +67,10 @@ func (repo *InMemoryArtifactRepository) DeleteArtifactByID(id string) error {
 		return ErrArtifactIDIsEmpty
 	}
 
-	if _, exists := repo.artifacts[id]; !exists {
+	if _, exists := repo.Artifacts[id]; !exists {
 		return ErrArtifactNotFound
 	}
 
-	delete(repo.artifacts, id)
+	delete(repo.Artifacts, id)
 	return nil
 }

@@ -49,7 +49,7 @@ func TestInMemoryArtifactRepositoryGetArtifactByIO(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := InMemoryArtifactRepository{
-				artifacts: tt.mockArtifact,
+				Artifacts: tt.mockArtifact,
 			}
 
 			artifact, err := repo.GetArtifactByID(tt.artifactID)
@@ -142,7 +142,7 @@ func TestInMemoryArtifactRepositoryGetArtifactByTypeAndSet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := InMemoryArtifactRepository{
-				artifacts: tt.mockArtifacts,
+				Artifacts: tt.mockArtifacts,
 			}
 
 			result, err := repo.GetArtifactByTypeAndSet(tt.artifactType, tt.artifactSet)
@@ -218,7 +218,7 @@ func TestInMemoryArtifactRepositorySaveArtifact(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := InMemoryArtifactRepository{
-				artifacts: tt.mockArtifacts,
+				Artifacts: tt.mockArtifacts,
 			}
 
 			err := repo.SaveArtifact(tt.artifact)
@@ -271,7 +271,7 @@ func TestInMemoryArtifactRepositoryDeleteArtifactByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := InMemoryArtifactRepository{
-				artifacts: tt.mockArtifacts,
+				Artifacts: tt.mockArtifacts,
 			}
 
 			err := repo.DeleteArtifactByID(tt.artifactID)
