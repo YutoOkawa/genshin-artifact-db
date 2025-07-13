@@ -92,7 +92,7 @@ func TestGetArtifactServiceGetArtifactByID(t *testing.T) {
 			service := GetArtifactService{
 				arrifactGetter: repo,
 			}
-			result, err := service.GetArtifactByID(tt.artifactID)
+			result, err := service.GetArtifact(tt.artifactID)
 
 			if diff := cmp.Diff(tt.expectedArtifact, result); diff != "" {
 				t.Errorf("GetArtifactByID() mismatch (-want +got):\n%s", diff)

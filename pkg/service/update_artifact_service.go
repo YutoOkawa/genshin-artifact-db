@@ -5,7 +5,7 @@ import (
 	"genshin-artifact-db/pkg/repository"
 )
 
-type UpdateArtifactServiceInterface interface {
+type CreateArtifactServiceInterface interface {
 	CreateArtifact(artifact entity.Artifact) error
 }
 

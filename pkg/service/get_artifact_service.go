@@ -1,13 +1,8 @@
 package service
 
 import (
-	"errors"
 	"genshin-artifact-db/pkg/entity"
 	"genshin-artifact-db/pkg/repository"
-)
-
-var (
-	ErrArtifactIDIsEmpty = errors.New("artifact ID is empty")
 )
 
 type StatusDTO struct {
@@ -24,7 +19,10 @@ type ArtifactDTO struct {
 }
 
 type GetArtifactServiceInterface interface {
-	GetArtifactByID(id string) (*ArtifactDTO, error)
+	GetArtifact(id string) (*ArtifactDTO, error)
+}
+
+type GetArtifactsServiceInterface interface {
 	GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error)
 }
 
@@ -38,7 +36,7 @@ func NewGetArtifactService(arrifactGetter repository.ArtifactGetter) *GetArtifac
 	}
 }
 
-func (s *GetArtifactService) GetArtifactByID(id string) (*ArtifactDTO, error) {
+func (s *GetArtifactService) GetArtifact(id string) (*ArtifactDTO, error) {
 	artifact, err := s.arrifactGetter.GetArtifactByID(id)
 	if err != nil {
 		return nil, err
