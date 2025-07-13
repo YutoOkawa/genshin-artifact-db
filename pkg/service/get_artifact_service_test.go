@@ -1,50 +1,111 @@
 package service
 
 import (
-	"errors"
+	"fmt"
 	"genshin-artifact-db/pkg/entity"
-	"genshin-artifact-db/pkg/repository"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
+type MockArtifactGetter struct {
+	GetArtifactByIDResponse *entity.Artifact
+	GetArtifactByIDError    error
+
+	GetArtifactByTypeAndSetResponse []*entity.Artifact
+	GetArtifactByTypeAndSetError    error
+}
+
+func (m *MockArtifactGetter) GetArtifactByID(id string) (*entity.Artifact, error) {
+	return m.GetArtifactByIDResponse, m.GetArtifactByIDError
+}
+
+func (m *MockArtifactGetter) GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*entity.Artifact, error) {
+	return m.GetArtifactByTypeAndSetResponse, m.GetArtifactByTypeAndSetError
+}
+
 func TestGetArtifactServiceGetArtifactByID(t *testing.T) {
 	testArtifact := &entity.Artifact{
-		ID: "test-id",
+		ID:          "test-id",
+		ArtifactSet: "test-set",
+		Type:        "test-type",
+		Level:       0,
+		PrimaryStat: entity.PrimaryStat{
+			Type:  "test-type",
+			Value: 0,
+		},
+		Substats: []entity.Substat{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
+	}
+
+	testArtifactDTO := ArtifactDTO{
+		Set:   "test-set",
+		Type:  "test-type",
+		Level: 0,
+		PrimaryStat: StatusDTO{
+			Type:  "test-type",
+			Value: 0,
+		},
+		SubStat: []StatusDTO{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
 	}
 	tests := []struct {
-		name             string
-		mockArtifacts    map[string]*entity.Artifact
-		artifactID       string
-		expectedArtifact *entity.Artifact
-		expectedError    error
+		name string
+
+		mockGetArtifactByIDResponse           *entity.Artifact
+		mockGetArtifactByIDError              error
+		mockGetArtifactByTypeAndSetRepository map[string]*entity.Artifact
+		mockGetArtifactByTypeAndSetError      error
+
+		artifactID string
+
+		expectedArtifact *ArtifactDTO
+		expectedError    bool
 	}{
 		{
 			name: "ShouldGetArtifactByIDSuccessfully",
-			mockArtifacts: map[string]*entity.Artifact{
-				"test-id": testArtifact,
-			},
-			artifactID:       "test-id",
-			expectedArtifact: testArtifact,
-			expectedError:    nil,
+
+			// GIVEN
+			mockGetArtifactByIDResponse: testArtifact,
+
+			// WHEN
+			artifactID: "test-id",
+
+			// THEN
+			expectedArtifact: &testArtifactDTO,
+			expectedError:    false,
 		},
 		{
-			name:             "ShouldReturnErrorWhenArtifactNotFound",
-			mockArtifacts:    map[string]*entity.Artifact{},
-			artifactID:       "non-existent-id",
+			name: "ShouldReturnErrorWhenGetArtifactByIDFails",
+
+			// GIVEN
+			mockGetArtifactByIDError: fmt.Errorf("GetArtifactByID error"),
+
+			// WHEN
+			artifactID: "non-existent-id",
+
+			// THEN
 			expectedArtifact: nil,
-			expectedError:    repository.ErrArtifactNotFound,
+			expectedError:    true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := repository.InMemoryArtifactRepository{
-				Artifacts: tt.mockArtifacts,
+			repo := &MockArtifactGetter{
+				GetArtifactByIDResponse: tt.mockGetArtifactByIDResponse,
+				GetArtifactByIDError:    tt.mockGetArtifactByIDError,
 			}
 			service := GetArtifactService{
-				arrifactGetter: &repo,
+				arrifactGetter: repo,
 			}
 			result, err := service.GetArtifactByID(tt.artifactID)
 
@@ -52,8 +113,8 @@ func TestGetArtifactServiceGetArtifactByID(t *testing.T) {
 				t.Errorf("GetArtifactByID() mismatch (-want +got):\n%s", diff)
 			}
 
-			if !errors.Is(err, tt.expectedError) {
-				t.Errorf("expected error: %v, got: %v", tt.expectedError, err)
+			if (err != nil) != tt.expectedError {
+				t.Errorf("expected error: %v, got: %v", tt.expectedError, err != nil)
 			}
 		})
 	}

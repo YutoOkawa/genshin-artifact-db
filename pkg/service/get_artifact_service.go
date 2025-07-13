@@ -24,8 +24,8 @@ type ArtifactDTO struct {
 }
 
 type GetArtifactServiceInterface interface {
-	GetArtifactByID(id string) (*entity.Artifact, error)
-	GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*entity.Artifact, error)
+	GetArtifactByID(id string) (*ArtifactDTO, error)
+	GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error)
 }
 
 type GetArtifactService struct {
@@ -38,6 +38,30 @@ func NewGetArtifactService(arrifactGetter repository.ArtifactGetter) *GetArtifac
 	}
 }
 
-func (s *GetArtifactService) GetArtifactByID(id string) (*entity.Artifact, error) {
-	return s.arrifactGetter.GetArtifactByID(id)
+func (s *GetArtifactService) GetArtifactByID(id string) (*ArtifactDTO, error) {
+	artifact, err := s.arrifactGetter.GetArtifactByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	artifactDTO := &ArtifactDTO{
+		Set:   string(artifact.ArtifactSet),
+		Type:  string(artifact.Type),
+		Level: artifact.Level,
+		PrimaryStat: StatusDTO{
+			Type:  string(artifact.PrimaryStat.Type),
+			Value: artifact.PrimaryStat.Value,
+		},
+	}
+
+	artifactDTO.SubStat = make([]StatusDTO, 0, len(artifact.Substats))
+	for _, subStat := range artifact.Substats {
+		subStatDTO := StatusDTO{
+			Type:  string(subStat.Type),
+			Value: subStat.Value,
+		}
+		artifactDTO.SubStat = append(artifactDTO.SubStat, subStatDTO)
+	}
+
+	return artifactDTO, nil
 }
