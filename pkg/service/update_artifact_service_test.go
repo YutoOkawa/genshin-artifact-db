@@ -9,16 +9,16 @@ import (
 
 func TestUpdateArtifactServiceCreateArtifact(t *testing.T) {
 	testArtifactCommand := CreateArtifactCommand{
-		ArtifactSet: "test-set",
-		Type:        "test-type",
+		ArtifactSet: "Gladiator's Finale",
+		Type:        "FLOWER",
 		Level:       0,
 		PrimaryStat: StatCommand{
-			Type:  "test-type",
+			Type:  "ATK_PERCENT",
 			Value: 0,
 		},
 		Substats: []StatCommand{
 			{
-				Type:  "test-type",
+				Type:  "ATK_PERCENT",
 				Value: 0,
 			},
 		},

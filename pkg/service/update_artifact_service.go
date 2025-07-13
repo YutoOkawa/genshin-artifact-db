@@ -21,7 +21,7 @@ type CreateArtifactCommand struct {
 }
 
 type CreateArtifactServiceInterface interface {
-	CreateArtifact(artifact entity.Artifact) error
+	CreateArtifact(artifactCommand CreateArtifactCommand) error
 }
 
 type UpdateArtifactService struct {
@@ -35,26 +35,35 @@ func NewUpdateArtifactService(artifactSaver repository.ArtifactSaver) *UpdateArt
 }
 
 func (s *UpdateArtifactService) CreateArtifact(artifactCommand CreateArtifactCommand) error {
-	artifact := entity.NewArtifact(
-		rand.Text(),
-		entity.ArtifactSet(artifactCommand.ArtifactSet),
-		entity.ArtifactType(artifactCommand.Type),
-		artifactCommand.Level,
-		entity.NewPrimaryStat(
-			entity.PrimaryStatType(artifactCommand.PrimaryStat.Type),
-			artifactCommand.PrimaryStat.Value,
-		),
-		func() []entity.Substat {
-			substats := make([]entity.Substat, len(artifactCommand.Substats))
-			for i, substat := range artifactCommand.Substats {
-				substats[i] = entity.NewSubstat(
-					entity.SubstatType(substat.Type),
-					substat.Value,
-				)
-			}
-			return substats
-		}(),
+	primaryStat, err := entity.NewPrimaryStat(
+		artifactCommand.PrimaryStat.Type,
+		artifactCommand.PrimaryStat.Value,
 	)
+	if err != nil {
+		return err
+	}
+
+	subStats := make([]entity.Substat, 0, len(artifactCommand.Substats))
+	for _, substat := range artifactCommand.Substats {
+		subStat, err := entity.NewSubstat(substat.Type, substat.Value)
+		if err != nil {
+			return err
+		}
+		subStats = append(subStats, *subStat)
+	}
+
+	artifact, err := entity.NewArtifact(
+		rand.Text(),
+		artifactCommand.ArtifactSet,
+		artifactCommand.Type,
+		artifactCommand.Level,
+		*primaryStat,
+		subStats,
+	)
+
+	if err != nil {
+		return err
+	}
 
 	if err := s.artifactSaver.SaveArtifact(artifact); err != nil {
 		return err
