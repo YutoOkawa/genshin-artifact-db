@@ -197,3 +197,93 @@ func TestGetArtifactsByType(t *testing.T) {
 		})
 	}
 }
+
+func TestGetArtifactsBySet(t *testing.T) {
+	testArtifact := &service.ArtifactDTO{
+		Set:   "test-set",
+		Type:  "test-type",
+		Level: 0,
+		PrimaryStat: service.StatusDTO{
+			Type:  "test-type",
+			Value: 0,
+		},
+		SubStat: []service.StatusDTO{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
+	}
+
+	tests := []struct {
+		name string
+
+		mockGetArtifactsBySetResponse []*service.ArtifactDTO
+		mockGetArtifactsBySetError    error
+
+		artifactSet string
+
+		expectedStatusCode int
+		expectedResponse   string
+	}{
+		{
+			name: "ShouldGetArtifactsBySetSuccessfully",
+
+			mockGetArtifactsBySetResponse: []*service.ArtifactDTO{testArtifact},
+
+			artifactSet: "test-set",
+
+			expectedStatusCode: 200,
+			expectedResponse: func() string {
+				response, _ := json.Marshal([]*service.ArtifactDTO{testArtifact})
+				return string(response)
+			}(),
+		},
+		{
+			name: "ShouldReturnErrorWhenArtifactsNotFound",
+
+			mockGetArtifactsBySetResponse: nil,
+			mockGetArtifactsBySetError:    repository.ErrArtifactNotFound,
+
+			artifactSet: "non-existent-set",
+
+			expectedStatusCode: 404,
+			expectedResponse:   `{"error":"artifact not found"}`,
+		},
+		{
+			name: "ShouldReturnErrorWhenGetArtifactsBySetFails",
+
+			mockGetArtifactsBySetResponse: nil,
+			mockGetArtifactsBySetError:    errors.New("internal server error"),
+
+			artifactSet: "test-set",
+
+			expectedStatusCode: 500,
+			expectedResponse:   `{"error":"Internal server error"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &service.MockGetArtifactsBySetService{
+				MockArtifacts:              tt.mockGetArtifactsBySetResponse,
+				MockGetArtifactsBySetError: tt.mockGetArtifactsBySetError,
+			}
+			gin.SetMode(gin.TestMode)
+			r := gin.Default()
+			r.GET("/artifacts/set/:set", GetArtifactsBySet(service))
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", fmt.Sprintf("/artifacts/set/%s", tt.artifactSet), nil)
+			r.ServeHTTP(w, req)
+
+			if w.Code != tt.expectedStatusCode {
+				t.Errorf("Expected status code %d, got %d", tt.expectedStatusCode, w.Code)
+			}
+
+			if diff := cmp.Diff(tt.expectedResponse, w.Body.String()); diff != "" {
+				t.Errorf("Response mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

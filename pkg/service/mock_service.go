@@ -17,3 +17,12 @@ type MockGetArtifactsByTypeService struct {
 func (s *MockGetArtifactsByTypeService) GetArtifactsByType(artifactType string) ([]*ArtifactDTO, error) {
 	return s.MockArtifacts, s.MockGetArtifactsByTypeError
 }
+
+type MockGetArtifactsBySetService struct {
+	MockArtifacts              []*ArtifactDTO
+	MockGetArtifactsBySetError error
+}
+
+func (s *MockGetArtifactsBySetService) GetArtifactsBySet(artifactSet string) ([]*ArtifactDTO, error) {
+	return s.MockArtifacts, s.MockGetArtifactsBySetError
+}
