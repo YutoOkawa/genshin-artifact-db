@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"encoding/json"
 	"errors"
+	"os"
 
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
 )
@@ -107,5 +109,41 @@ func (repo *InMemoryArtifactRepository) DeleteArtifactByID(id string) error {
 	}
 
 	delete(repo.Artifacts, id)
+	return nil
+}
+
+type artifacts struct {
+	Artifacts map[string]*entity.Artifact `json:"artifacts"`
+}
+
+func (repo *InMemoryArtifactRepository) SaveJSONFile(filename string) error {
+	var ArtifactData artifacts
+	ArtifactData.Artifacts = repo.Artifacts
+
+	artifactBytes, err := json.Marshal(ArtifactData)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(filename, artifactBytes, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *InMemoryArtifactRepository) LoadJSONFile(filename string) error {
+	file, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	var ArtifactData artifacts
+	err = json.Unmarshal(file, &ArtifactData)
+	if err != nil {
+		return err
+	}
+	repo.Artifacts = ArtifactData.Artifacts
 	return nil
 }
