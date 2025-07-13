@@ -2,11 +2,16 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/service"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	InternalServerErrorTemplate = "Internal server error: %s"
 )
 
 type StatRequestParam struct {
@@ -32,7 +37,7 @@ func GetArtifact(artifactService service.GetArtifactServiceInterface) func(c *gi
 				c.JSON(404, gin.H{"error": err.Error()})
 				return
 			} else {
-				c.JSON(500, gin.H{"error": "Internal server error"})
+				c.JSON(500, gin.H{"error": fmt.Sprintf(InternalServerErrorTemplate, err.Error())})
 				return
 			}
 		}
@@ -51,7 +56,7 @@ func GetArtifactsByType(artifactService service.GetArtifactsByTypeServiceInterfa
 				c.JSON(404, gin.H{"error": err.Error()})
 				return
 			} else {
-				c.JSON(500, gin.H{"error": "Internal server error"})
+				c.JSON(500, gin.H{"error": fmt.Sprintf(InternalServerErrorTemplate, err.Error())})
 				return
 			}
 		}
@@ -69,7 +74,7 @@ func GetArtifactsBySet(artifactService service.GetArtifactsBySetServiceInterface
 				c.JSON(404, gin.H{"error": err.Error()})
 				return
 			} else {
-				c.JSON(500, gin.H{"error": "Internal server error"})
+				c.JSON(500, gin.H{"error": fmt.Sprintf(InternalServerErrorTemplate, err.Error())})
 				return
 			}
 		}
@@ -88,7 +93,7 @@ func GetArtifacts(artifactService service.GetArtifactsServiceInterface) func(c *
 				c.JSON(404, gin.H{"error": err.Error()})
 				return
 			} else {
-				c.JSON(500, gin.H{"error": "Internal server error"})
+				c.JSON(500, gin.H{"error": fmt.Sprintf(InternalServerErrorTemplate, err.Error())})
 				return
 			}
 		}
@@ -123,7 +128,7 @@ func CreateArtifact(artifactService service.CreateArtifactServiceInterface) func
 		}
 
 		if err := artifactService.CreateArtifact(artifactCommand); err != nil {
-			c.JSON(500, gin.H{"error": "Internal server error"})
+			c.JSON(500, gin.H{"error": fmt.Sprintf(InternalServerErrorTemplate, err.Error())})
 			return
 		}
 
