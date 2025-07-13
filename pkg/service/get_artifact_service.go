@@ -26,6 +26,10 @@ type GetArtifactsServiceInterface interface {
 	GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error)
 }
 
+type GetArtifactsByTypeServiceInterface interface {
+	GetArtifactsByType(artifactType string) ([]*ArtifactDTO, error)
+}
+
 type GetArtifactService struct {
 	arrifactGetter repository.ArtifactGetter
 }

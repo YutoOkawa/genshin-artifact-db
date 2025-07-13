@@ -105,3 +105,95 @@ func TestGetArtifact(t *testing.T) {
 		})
 	}
 }
+
+func TestGetArtifactsByType(t *testing.T) {
+	testArtifacts := []*service.ArtifactDTO{
+		{
+			Set:   "test-set-1",
+			Type:  "test-type-1",
+			Level: 20,
+			PrimaryStat: service.StatusDTO{
+				Type:  "test-type-1",
+				Value: 0,
+			},
+			SubStat: []service.StatusDTO{
+				{
+					Type:  "test-sub-type-1",
+					Value: 0,
+				},
+			},
+		},
+	}
+
+	tests := []struct {
+		name string
+
+		mockArtifacts               []*service.ArtifactDTO
+		mockGetArtifactsByTypeError error
+
+		artifactType string
+
+		expectedStatusCode int
+		expectedResponse   string
+	}{
+		{
+			name: "ShouldGetArtifactsByTypeSuccessfully",
+
+			mockArtifacts: testArtifacts,
+
+			artifactType: "test-type",
+
+			expectedStatusCode: 200,
+			expectedResponse: func() string {
+				response, _ := json.Marshal(testArtifacts)
+				return string(response)
+			}(),
+		},
+		{
+			name: "ShouldReturnErrorWhenArtifactsNotFound",
+
+			mockArtifacts:               nil,
+			mockGetArtifactsByTypeError: repository.ErrArtifactNotFound,
+
+			artifactType: "non-existent-type",
+
+			expectedStatusCode: 404,
+			expectedResponse:   `{"error":"artifact not found"}`,
+		},
+		{
+			name: "ShouldReturnErrorWhenGetArtifactsByTypeFails",
+
+			mockArtifacts:               nil,
+			mockGetArtifactsByTypeError: errors.New("internal server error"),
+
+			artifactType: "test-type",
+
+			expectedStatusCode: 500,
+			expectedResponse:   `{"error":"Internal server error"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &service.MockGetArtifactsByTypeService{
+				MockArtifacts:               tt.mockArtifacts,
+				MockGetArtifactsByTypeError: tt.mockGetArtifactsByTypeError,
+			}
+			gin.SetMode(gin.TestMode)
+			r := gin.Default()
+			r.GET("/artifacts/type/:type", GetArtifactsByType(service))
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", fmt.Sprintf("/artifacts/type/%s", tt.artifactType), nil)
+			r.ServeHTTP(w, req)
+
+			if w.Code != tt.expectedStatusCode {
+				t.Errorf("Expected status code %d, got %d", tt.expectedStatusCode, w.Code)
+			}
+
+			if diff := cmp.Diff(tt.expectedResponse, w.Body.String()); diff != "" {
+				t.Errorf("Response mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

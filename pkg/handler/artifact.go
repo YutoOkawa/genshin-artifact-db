@@ -27,6 +27,24 @@ func GetArtifact(service service.GetArtifactServiceInterface) func(c *gin.Contex
 	}
 }
 
+func GetArtifactsByType(service service.GetArtifactsByTypeServiceInterface) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		artifactType := c.Param("type")
+
+		artifacts, err := service.GetArtifactsByType(artifactType)
+		if err != nil {
+			if errors.Is(err, repository.ErrArtifactNotFound) {
+				c.JSON(404, gin.H{"error": err.Error()})
+				return
+			} else {
+				c.JSON(500, gin.H{"error": "Internal server error"})
+				return
+			}
+		}
+		c.JSON(200, artifacts)
+	}
+}
+
 func GetArtifacts(service service.GetArtifactsServiceInterface) {}
 
 func CreateArtifact(service service.CreateArtifactServiceInterface) {}
