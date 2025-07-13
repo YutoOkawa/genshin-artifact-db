@@ -215,7 +215,7 @@ func TestGetArtifactServicegetArtifactByTypeAndSet(t *testing.T) {
 			service := GetArtifactService{
 				arrifactGetter: repo,
 			}
-			result, err := service.GetArtifactByTypeAndSet("test-type", "test-set")
+			result, err := service.GetArtifactsByTypeAndSet("test-type", "test-set")
 
 			if diff := cmp.Diff(tt.expectedArtifacts, result); diff != "" {
 				t.Errorf("GetArtifactByTypeAndSet() mismatch (-want +got):\n%s", diff)
@@ -381,7 +381,7 @@ func TestGetArtifactServiceGetArtifactBySet(t *testing.T) {
 			service := GetArtifactService{
 				arrifactGetter: repo,
 			}
-			result, err := service.GetArtifactBySet("test-set")
+			result, err := service.GetArtifactsBySet("test-set")
 
 			if diff := cmp.Diff(tt.expectedArtifacts, result); diff != "" {
 				t.Errorf("GetArtifactByTypeAndSet() mismatch (-want +got):\n%s", diff)

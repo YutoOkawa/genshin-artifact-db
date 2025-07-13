@@ -68,7 +68,7 @@ func (s *GetArtifactService) GetArtifact(id string) (*ArtifactDTO, error) {
 	return artifactDTO, nil
 }
 
-func (s *GetArtifactService) GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error) {
+func (s *GetArtifactService) GetArtifactsByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error) {
 	artifacts, err := s.arrifactGetter.GetArtifactByTypeAndSet(artifactType, artifactSet)
 	if err != nil {
 		return nil, err
@@ -134,7 +134,7 @@ func (s *GetArtifactService) GetArtifactsByType(artifactType string) ([]*Artifac
 	return artifactDTOs, nil
 }
 
-func (s *GetArtifactService) GetArtifactBySet(artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error) {
+func (s *GetArtifactService) GetArtifactsBySet(artifactSet entity.ArtifactSet) ([]*ArtifactDTO, error) {
 	artifacts, err := s.arrifactGetter.GetArtifactBySet(artifactSet)
 	if err != nil {
 		return nil, err
