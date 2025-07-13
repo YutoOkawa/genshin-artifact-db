@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -370,6 +371,97 @@ func TestGetArtifactsByTypeAndSet(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", fmt.Sprintf("/artifacts/type/%s/set/%s", tt.artifactType, tt.artifactSet), nil)
+			r.ServeHTTP(w, req)
+
+			if w.Code != tt.expectedStatusCode {
+				t.Errorf("Expected status code %d, got %d", tt.expectedStatusCode, w.Code)
+			}
+
+			if diff := cmp.Diff(tt.expectedResponse, w.Body.String()); diff != "" {
+				t.Errorf("Response mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestCreateArtifact(t *testing.T) {
+	testCreateArtifactRequestParam := CreateArtifactRequestParam{
+		ArtifactSet: "Gladiator's Finale",
+		Type:        "FLOWER",
+		Level:       0,
+		PrimaryStat: StatRequestParam{
+			Type:  "ATK_PERCENT",
+			Value: 0,
+		},
+		Substats: []StatRequestParam{
+			{
+				Type:  "ATK_PERCENT",
+				Value: 0,
+			},
+		},
+	}
+
+	tests := []struct {
+		name string
+
+		// GIVEN
+		mockArtifactSaverError error
+
+		// WHEN
+		createArtifactRequestParamByte []byte
+
+		// THEN
+		expectedStatusCode int
+		expectedResponse   string
+	}{
+		{
+			name: "ShouldCreateArtifactSuccessfully",
+
+			createArtifactRequestParamByte: func() []byte {
+				body, _ := json.Marshal(testCreateArtifactRequestParam)
+				return body
+			}(),
+
+			expectedStatusCode: 201,
+			expectedResponse:   `{"message":"Artifact created successfully"}`,
+		},
+		{
+			name: "ShouldReturnErrorWhenCreateArtifactRequestParamIsInvalid",
+
+			createArtifactRequestParamByte: []byte(`invalid`),
+
+			expectedStatusCode: 400,
+			expectedResponse:   `{"error":"Invalid request body"}`,
+		},
+		{
+			name: "ShouldReturnErrorWhenArtifactSaverFails",
+
+			createArtifactRequestParamByte: func() []byte {
+				body, _ := json.Marshal(testCreateArtifactRequestParam)
+				return body
+			}(),
+
+			mockArtifactSaverError: errors.New("artifact saver error"),
+
+			expectedStatusCode: 500,
+			expectedResponse:   `{"error":"Internal server error"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := &service.MockCreateArtifactService{
+				MockCreateArtifactError: tt.mockArtifactSaverError,
+			}
+
+			gin.SetMode(gin.TestMode)
+			r := gin.Default()
+			r.POST("/artifacts", CreateArtifact(service))
+
+			w := httptest.NewRecorder()
+
+			req := httptest.NewRequest("POST", "/artifacts", bytes.NewBuffer(tt.createArtifactRequestParamByte))
+			req.Header.Set("Content-Type", "application/json")
 			r.ServeHTTP(w, req)
 
 			if w.Code != tt.expectedStatusCode {
