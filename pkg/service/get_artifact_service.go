@@ -96,3 +96,36 @@ func (s *GetArtifactService) GetArtifactByTypeAndSet(artifactType entity.Artifac
 
 	return artifactDTOs, nil
 }
+
+func (s *GetArtifactService) GetArtifactByType(artifactType entity.ArtifactType) ([]*ArtifactDTO, error) {
+	artifacts, err := s.arrifactGetter.GetArtifactByType(artifactType)
+	if err != nil {
+		return nil, err
+	}
+
+	artifactDTOs := make([]*ArtifactDTO, 0, len(artifacts))
+	for _, artifact := range artifacts {
+		artifactDTO := &ArtifactDTO{
+			Set:   string(artifact.ArtifactSet),
+			Type:  string(artifact.Type),
+			Level: artifact.Level,
+			PrimaryStat: StatusDTO{
+				Type:  string(artifact.PrimaryStat.Type),
+				Value: artifact.PrimaryStat.Value,
+			},
+		}
+
+		artifactDTO.SubStat = make([]StatusDTO, 0, len(artifact.Substats))
+		for _, subStat := range artifact.Substats {
+			subStatDTO := StatusDTO{
+				Type:  string(subStat.Type),
+				Value: subStat.Value,
+			}
+			artifactDTO.SubStat = append(artifactDTO.SubStat, subStatDTO)
+		}
+
+		artifactDTOs = append(artifactDTOs, artifactDTO)
+	}
+
+	return artifactDTOs, nil
+}
