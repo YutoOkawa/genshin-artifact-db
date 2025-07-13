@@ -32,6 +32,6 @@ type MockGetArtifactByTypeAndSetService struct {
 	MockGetArtifactByTypeAndSetError error
 }
 
-func (s *MockGetArtifactByTypeAndSetService) GetArtifactByTypeAndSet(artifactType, artifactSet string) ([]*ArtifactDTO, error) {
+func (s *MockGetArtifactByTypeAndSetService) GetArtifactsByTypeAndSet(artifactType, artifactSet string) ([]*ArtifactDTO, error) {
 	return s.MockArtifacts, s.MockGetArtifactByTypeAndSetError
 }

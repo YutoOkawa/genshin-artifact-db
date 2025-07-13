@@ -69,7 +69,7 @@ func GetArtifacts(service service.GetArtifactsServiceInterface) func(c *gin.Cont
 		artifactType := c.Param("type")
 		artifactSet := c.Param("set")
 
-		artifacts, err := service.GetArtifactByTypeAndSet(artifactType, artifactSet)
+		artifacts, err := service.GetArtifactsByTypeAndSet(artifactType, artifactSet)
 		if err != nil {
 			if errors.Is(err, repository.ErrArtifactNotFound) {
 				c.JSON(404, gin.H{"error": err.Error()})
