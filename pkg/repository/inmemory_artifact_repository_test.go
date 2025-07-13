@@ -169,6 +169,90 @@ func TestInMemoryArtifactRepositoryGetArtifactByTypeAndSet(t *testing.T) {
 	}
 }
 
+func TestInMemoryArtifactRepositoryGetArtifactByType(t *testing.T) {
+	tests := []struct {
+		name string
+
+		mockArtifacts map[string]*entity.Artifact
+
+		artifactType entity.ArtifactType
+
+		expectedGotArtifactsLength int
+		expectedError              bool
+	}{
+		{
+			name: "ShouldInMemoryArtifactRepositoryGetArtifactByTypeSuccessfully",
+
+			mockArtifacts: map[string]*entity.Artifact{
+				"test-id-1": {
+					ID:   "test-id-1",
+					Type: entity.ARTIFACT_TYPE_FLOWER,
+				},
+				"test-id-2": {
+					ID:   "test-id-2",
+					Type: entity.ARTIFACT_TYPE_FLOWER,
+				},
+			},
+
+			artifactType: entity.ARTIFACT_TYPE_FLOWER,
+
+			expectedGotArtifactsLength: 2,
+			expectedError:              false,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryGetArtifactByTypeSuccessfullyWithAnotherType",
+
+			mockArtifacts: map[string]*entity.Artifact{
+				"test-id-1": {
+					ID:   "test-id-1",
+					Type: entity.ARTIFACT_TYPE_PLUME,
+				},
+				"test-id-2": {
+					ID:   "test-id-2",
+					Type: entity.ARTIFACT_TYPE_FLOWER,
+				},
+			},
+
+			artifactType: entity.ARTIFACT_TYPE_FLOWER,
+
+			expectedGotArtifactsLength: 1,
+			expectedError:              false,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryReturnErrorWhenNoArtifactsFound",
+
+			mockArtifacts: map[string]*entity.Artifact{
+				"test-id-1": {
+					ID:   "test-id-1",
+					Type: entity.ARTIFACT_TYPE_PLUME,
+				},
+			},
+
+			artifactType: entity.ARTIFACT_TYPE_FLOWER,
+
+			expectedGotArtifactsLength: 0,
+			expectedError:              true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := InMemoryArtifactRepository{
+				Artifacts: tt.mockArtifacts,
+			}
+
+			result, err := repo.GetArtifactByType(tt.artifactType)
+			if len(result) != tt.expectedGotArtifactsLength {
+				t.Errorf("expected %d artifacts, got %d", tt.expectedGotArtifactsLength, len(result))
+			}
+
+			if (err != nil) != tt.expectedError {
+				t.Errorf("expected error: %v, got: %v", tt.expectedError, err != nil)
+			}
+		})
+	}
+}
+
 func TestInMemoryArtifactRepositorySaveArtifact(t *testing.T) {
 	tests := []struct {
 		name string
