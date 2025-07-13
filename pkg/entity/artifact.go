@@ -20,12 +20,12 @@ const ARTIFACT_TYPE_CIRCLET ArtifactType = "CIRCLET"
 
 type ArtifactSet string
 
-const ARTIFACT_SET_GLADIATORS_FINALOFFERING ArtifactSet = "Gladiator's Finale"
-const ARTIFACT_SET_WANDERERS_TROUPE ArtifactSet = "Wanderer's Troupe"
-const ARTIFACT_SET_NOBLESSE_OBLIGE ArtifactSet = "Noblesse Oblige"
-const ARTIFACT_SET_BLOODSTAINED_CHIVALRY ArtifactSet = "Bloodstained Chivalry"
-const ARTIFACT_SET_MAIDENS_BELLSING ArtifactSet = "Maiden's Beloved"
-const ARTIFACT_SET_VIRIDESCENT_VENERER ArtifactSet = "Vermillion Hereafter"
+const ARTIFACT_SET_GLADIATORS_FINALOFFERING ArtifactSet = "Gladiator"
+const ARTIFACT_SET_WANDERERS_TROUPE ArtifactSet = "Wanderer"
+const ARTIFACT_SET_NOBLESSE_OBLIGE ArtifactSet = "Noblesse"
+const ARTIFACT_SET_BLOODSTAINED_CHIVALRY ArtifactSet = "Bloodstained"
+const ARTIFACT_SET_MAIDENS_BELLSING ArtifactSet = "Maiden"
+const ARTIFACT_SET_VIRIDESCENT_VENERER ArtifactSet = "Vermillion"
 
 type PrimaryStatType string
 

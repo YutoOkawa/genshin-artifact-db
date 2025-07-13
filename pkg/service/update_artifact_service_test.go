@@ -9,7 +9,7 @@ import (
 
 func TestUpdateArtifactServiceCreateArtifact(t *testing.T) {
 	testArtifactCommand := CreateArtifactCommand{
-		ArtifactSet: "Gladiator's Finale",
+		ArtifactSet: "Gladiator",
 		Type:        "FLOWER",
 		Level:       0,
 		PrimaryStat: StatCommand{

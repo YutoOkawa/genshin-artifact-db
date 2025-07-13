@@ -444,7 +444,7 @@ func TestCreateArtifact(t *testing.T) {
 			mockArtifactSaverError: errors.New("artifact saver error"),
 
 			expectedStatusCode: 500,
-			expectedResponse:   `{"error":"Internal server error"}`,
+			expectedResponse:   `{"error":"Internal server error: artifact saver error"}`,
 		},
 	}
 
