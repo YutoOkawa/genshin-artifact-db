@@ -310,3 +310,86 @@ func TestGetArtifactServiceGetArtifactByType(t *testing.T) {
 		})
 	}
 }
+
+func TestGetArtifactServiceGetArtifactBySet(t *testing.T) {
+	testArtifact := &entity.Artifact{
+		ID:          "test-id",
+		ArtifactSet: "test-set",
+		Type:        "test-type",
+		Level:       0,
+		PrimaryStat: entity.PrimaryStat{
+			Type:  "test-type",
+			Value: 0,
+		},
+		Substats: []entity.Substat{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
+	}
+
+	testArtifactDTO := &ArtifactDTO{
+		Set:   "test-set",
+		Type:  "test-type",
+		Level: 0,
+		PrimaryStat: StatusDTO{
+			Type:  "test-type",
+			Value: 0,
+		},
+		SubStat: []StatusDTO{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
+	}
+
+	tests := []struct {
+		name string
+
+		mockGetArtifactBySetResponse []*entity.Artifact
+		mockGetArtifactBySetError    error
+
+		expectedArtifacts []*ArtifactDTO
+		expectedError     bool
+	}{
+		{
+			name: "ShouldGetArtifactBySetSuccessfully",
+
+			mockGetArtifactBySetResponse: []*entity.Artifact{testArtifact},
+
+			expectedArtifacts: []*ArtifactDTO{testArtifactDTO},
+			expectedError:     false,
+		},
+		{
+			name: "ShouldReturnErrorWhenGetArtifactBySetFails",
+
+			mockGetArtifactBySetError: fmt.Errorf("GetArtifactBySet error"),
+
+			expectedArtifacts: nil,
+			expectedError:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &repository.MockArtifactGetter{
+				GetArtifactBySetResponse: tt.mockGetArtifactBySetResponse,
+				GetArtifactBySetError:    tt.mockGetArtifactBySetError,
+			}
+			service := GetArtifactService{
+				arrifactGetter: repo,
+			}
+			result, err := service.GetArtifactBySet("test-set")
+
+			if diff := cmp.Diff(tt.expectedArtifacts, result); diff != "" {
+				t.Errorf("GetArtifactByTypeAndSet() mismatch (-want +got):\n%s", diff)
+			}
+
+			if (err != nil) != tt.expectedError {
+				t.Errorf("expected error: %v, got: %v", tt.expectedError, err != nil)
+			}
+		})
+	}
+}
