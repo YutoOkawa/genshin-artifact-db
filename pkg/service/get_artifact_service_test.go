@@ -3,26 +3,11 @@ package service
 import (
 	"fmt"
 	"genshin-artifact-db/pkg/entity"
+	"genshin-artifact-db/pkg/repository"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
-
-type MockArtifactGetter struct {
-	GetArtifactByIDResponse *entity.Artifact
-	GetArtifactByIDError    error
-
-	GetArtifactByTypeAndSetResponse []*entity.Artifact
-	GetArtifactByTypeAndSetError    error
-}
-
-func (m *MockArtifactGetter) GetArtifactByID(id string) (*entity.Artifact, error) {
-	return m.GetArtifactByIDResponse, m.GetArtifactByIDError
-}
-
-func (m *MockArtifactGetter) GetArtifactByTypeAndSet(artifactType entity.ArtifactType, artifactSet entity.ArtifactSet) ([]*entity.Artifact, error) {
-	return m.GetArtifactByTypeAndSetResponse, m.GetArtifactByTypeAndSetError
-}
 
 func TestGetArtifactServiceGetArtifactByID(t *testing.T) {
 	testArtifact := &entity.Artifact{
@@ -100,7 +85,7 @@ func TestGetArtifactServiceGetArtifactByID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &MockArtifactGetter{
+			repo := &repository.MockArtifactGetter{
 				GetArtifactByIDResponse: tt.mockGetArtifactByIDResponse,
 				GetArtifactByIDError:    tt.mockGetArtifactByIDError,
 			}
@@ -223,7 +208,7 @@ func TestGetArtifactServicegetArtifactByTypeAndSet(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &MockArtifactGetter{
+			repo := &repository.MockArtifactGetter{
 				GetArtifactByTypeAndSetResponse: tt.mockGetArtifactByTypeAndSetResponse,
 				GetArtifactByTypeAndSetError:    tt.mockGetArtifactByTypeAndSetError,
 			}
