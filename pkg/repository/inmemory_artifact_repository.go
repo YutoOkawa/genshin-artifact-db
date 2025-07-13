@@ -1,6 +1,11 @@
 package repository
 
-import "genshin-artifact-db/pkg/entity"
+import (
+	"errors"
+	"genshin-artifact-db/pkg/entity"
+)
+
+var ErrArtifactNotFound = errors.New("artifact not found")
 
 type InMemoryArtifactRepository struct {
 	artifacts map[string]*entity.Artifact
@@ -15,7 +20,7 @@ func NewInMemoryArtifactRepository() *InMemoryArtifactRepository {
 func (repo *InMemoryArtifactRepository) GetArtifactByID(id string) (*entity.Artifact, error) {
 	artifact, exists := repo.artifacts[id]
 	if !exists {
-		return nil, nil
+		return nil, ErrArtifactNotFound
 	}
 	return artifact, nil
 }
@@ -27,5 +32,10 @@ func (repo *InMemoryArtifactRepository) GetArtifactByTypeAndSet(artifactType ent
 			result = append(result, artifact)
 		}
 	}
+
+	if len(result) == 0 {
+		return nil, ErrArtifactNotFound
+	}
+
 	return result, nil
 }
