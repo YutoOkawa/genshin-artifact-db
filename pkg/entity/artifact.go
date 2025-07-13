@@ -35,6 +35,13 @@ type PrimaryStat struct {
 	Value float64
 }
 
+func NewPrimaryStat(statType PrimaryStatType, value float64) PrimaryStat {
+	return PrimaryStat{
+		Type:  statType,
+		Value: value,
+	}
+}
+
 type SubstatType string
 
 const SUBSTAT_ATK_PERCENT SubstatType = "ATK_PERCENT"
@@ -48,6 +55,13 @@ const SUBSTAT_ENERGY_RECHARGE SubstatType = "ENERGY_RECHARGE"
 type Substat struct {
 	Type  SubstatType
 	Value float64
+}
+
+func NewSubstat(substatType SubstatType, value float64) Substat {
+	return Substat{
+		Type:  substatType,
+		Value: value,
+	}
 }
 
 type Artifact struct {

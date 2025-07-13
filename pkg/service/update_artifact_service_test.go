@@ -4,13 +4,24 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
 )
 
 func TestUpdateArtifactServiceCreateArtifact(t *testing.T) {
-	testArtifact := entity.Artifact{
-		ID: "test-id",
+	testArtifactCommand := CreateArtifactCommand{
+		ArtifactSet: "test-set",
+		Type:        "test-type",
+		Level:       0,
+		PrimaryStat: StatCommand{
+			Type:  "test-type",
+			Value: 0,
+		},
+		Substats: []StatCommand{
+			{
+				Type:  "test-type",
+				Value: 0,
+			},
+		},
 	}
 
 	tests := []struct {
@@ -20,7 +31,7 @@ func TestUpdateArtifactServiceCreateArtifact(t *testing.T) {
 		mockArtifactSaverError error
 
 		// WHEN
-		artifact entity.Artifact
+		artifactCommand CreateArtifactCommand
 
 		// THEN
 		expectedError bool
@@ -28,7 +39,7 @@ func TestUpdateArtifactServiceCreateArtifact(t *testing.T) {
 		{
 			name: "ShouldCreateArtifactSuccessfully",
 
-			artifact: testArtifact,
+			artifactCommand: testArtifactCommand,
 
 			expectedError: false,
 		},
@@ -51,7 +62,7 @@ func TestUpdateArtifactServiceCreateArtifact(t *testing.T) {
 				artifactSaver: mockArtifactSaver,
 			}
 
-			err := service.CreateArtifact(tt.artifact)
+			err := service.CreateArtifact(tt.artifactCommand)
 			if (err != nil) != tt.expectedError {
 				t.Errorf("CreateArtifact() error = %v, expectedError %v", err, tt.expectedError)
 			}
