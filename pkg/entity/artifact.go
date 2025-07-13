@@ -31,8 +31,8 @@ const ELEMENTAL_DMG_BONUS PrimaryStatType = "ELEMENTAL_DMG_BONUS"
 const HEALING_BONUS PrimaryStatType = "HEALING_BONUS"
 
 type PrimaryStat struct {
-	Type  PrimaryStatType `json:"type"`
-	Value float64         `json:"value"`
+	Type  PrimaryStatType
+	Value float64
 }
 
 type SubstatType string
@@ -46,17 +46,17 @@ const SUBSTAT_CRIT_DMG SubstatType = "CRIT_DMG"
 const SUBSTAT_ENERGY_RECHARGE SubstatType = "ENERGY_RECHARGE"
 
 type Substat struct {
-	Type  SubstatType `json:"type"`
-	Value float64     `json:"value"`
+	Type  SubstatType
+	Value float64
 }
 
 type Artifact struct {
-	ID          string       `json:"id"`
-	ArtifactSet ArtifactSet  `json:"artifact_set"`
-	Type        ArtifactType `json:"type"`
-	Level       int          `json:"level"`
-	PrimaryStat PrimaryStat  `json:"primary_stat"`
-	Substats    []Substat    `json:"substats"`
+	ID          string
+	ArtifactSet ArtifactSet
+	Type        ArtifactType
+	Level       int
+	PrimaryStat PrimaryStat
+	Substats    []Substat
 }
 
 func NewArtifact(id string, artifactSet ArtifactSet, artifactType ArtifactType, level int, primaryStat PrimaryStat, substats []Substat) *Artifact {
