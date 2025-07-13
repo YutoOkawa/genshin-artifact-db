@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"genshin-artifact-db/pkg/entity"
 	"testing"
 )
@@ -151,6 +152,79 @@ func TestInMemoryArtifactRepositoryGetArtifactByTypeAndSet(t *testing.T) {
 
 			if (err != nil) != tt.expectedError {
 				t.Errorf("expected error: %v, got: %v", tt.expectedError, err != nil)
+			}
+		})
+	}
+}
+
+func TestInMemoryArtifactRepositorySaveArtifact(t *testing.T) {
+	tests := []struct {
+		name string
+
+		mockArtifacts map[string]*entity.Artifact
+
+		artifact *entity.Artifact
+
+		expectedError error
+	}{
+		{
+			name: "ShouldInMemoryArtifactRepositorySaveArtifactSuccessfully",
+
+			mockArtifacts: map[string]*entity.Artifact{},
+
+			artifact: &entity.Artifact{
+				ID: "new-id",
+			},
+
+			expectedError: nil,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryReturnErrorWhenArtifactIDAlreadyExists",
+
+			mockArtifacts: map[string]*entity.Artifact{
+				"existing-id": {
+					ID: "existing-id",
+				},
+			},
+
+			artifact: &entity.Artifact{
+				ID: "existing-id",
+			},
+
+			expectedError: ErrArtifactAlreadyExists,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryReturnErrorWhenArtifactIsNil",
+
+			mockArtifacts: map[string]*entity.Artifact{},
+
+			artifact: nil,
+
+			expectedError: ErrArtifactIsNil,
+		},
+		{
+			name: "ShouldInMemoryArtifactRepositoryReturnErrorWhenArtifactIDIsEmpty",
+
+			mockArtifacts: map[string]*entity.Artifact{},
+
+			artifact: &entity.Artifact{
+				ID: "",
+			},
+
+			expectedError: ErrArtifactIDIsEmpty,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := InMemoryArtifactRepository{
+				artifacts: tt.mockArtifacts,
+			}
+
+			err := repo.SaveArtifact(tt.artifact)
+
+			if !errors.Is(err, tt.expectedError) {
+				t.Errorf("expected error: %v, got: %v", tt.expectedError, err)
 			}
 		})
 	}
