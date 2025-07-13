@@ -1,5 +1,15 @@
 package entity
 
+import "errors"
+
+var (
+	ErrInvalidArtifactID      = errors.New("artifact ID cannot be empty")
+	ErrInvalidArtifactType    = errors.New("invalid artifact type")
+	ErrInvalidArtifactSet     = errors.New("invalid artifact set")
+	ErrInvalidPrimaryStatType = errors.New("invalid primary stat")
+	ErrInvalidSubstatType     = errors.New("invalid substat type")
+)
+
 type ArtifactType string
 
 const ARTIFACT_TYPE_FLOWER ArtifactType = "FLOWER"
@@ -35,11 +45,20 @@ type PrimaryStat struct {
 	Value float64
 }
 
-func NewPrimaryStat(statType PrimaryStatType, value float64) PrimaryStat {
-	return PrimaryStat{
-		Type:  statType,
-		Value: value,
+func NewPrimaryStat(statType string, value float64) (*PrimaryStat, error) {
+	statTypeEnum := PrimaryStatType(statType)
+	switch statTypeEnum {
+	case ATK_PERCENT, HP_PERCENT, DEF_PERCENT, ELEMENTAL_MASTERY,
+		CRIT_RATE, CRIT_DMG, ENERGY_RECHARGE, PHYSICAL_DMG_BONUS,
+		ELEMENTAL_DMG_BONUS, HEALING_BONUS:
+	default:
+		return nil, ErrInvalidPrimaryStatType
 	}
+
+	return &PrimaryStat{
+		Type:  statTypeEnum,
+		Value: value,
+	}, nil
 }
 
 type SubstatType string
@@ -57,11 +76,20 @@ type Substat struct {
 	Value float64
 }
 
-func NewSubstat(substatType SubstatType, value float64) Substat {
-	return Substat{
-		Type:  substatType,
-		Value: value,
+func NewSubstat(substatType string, value float64) (*Substat, error) {
+	substatTypeEnum := SubstatType(substatType)
+	switch substatTypeEnum {
+	case SUBSTAT_ATK_PERCENT, SUBSTAT_HP_PERCENT, SUBSTAT_DEF_PERCENT,
+		SUBSTAT_ELEMENTAL_MASTERY, SUBSTAT_CRIT_RATE, SUBSTAT_CRIT_DMG,
+		SUBSTAT_ENERGY_RECHARGE:
+	default:
+		return nil, ErrInvalidSubstatType
 	}
+
+	return &Substat{
+		Type:  substatTypeEnum,
+		Value: value,
+	}, nil
 }
 
 type Artifact struct {
@@ -73,13 +101,34 @@ type Artifact struct {
 	Substats    []Substat
 }
 
-func NewArtifact(id string, artifactSet ArtifactSet, artifactType ArtifactType, level int, primaryStat PrimaryStat, substats []Substat) *Artifact {
+func NewArtifact(id string, artifactSet, artifactType string, level int, primaryStat PrimaryStat, substats []Substat) (*Artifact, error) {
+	if id == "" {
+		return nil, ErrInvalidArtifactID
+	}
+
+	artifactSetEnum := ArtifactSet(artifactSet)
+	switch artifactSetEnum {
+	case ARTIFACT_SET_GLADIATORS_FINALOFFERING, ARTIFACT_SET_WANDERERS_TROUPE,
+		ARTIFACT_SET_NOBLESSE_OBLIGE, ARTIFACT_SET_BLOODSTAINED_CHIVALRY,
+		ARTIFACT_SET_MAIDENS_BELLSING, ARTIFACT_SET_VIRIDESCENT_VENERER:
+	default:
+		return nil, ErrInvalidArtifactSet
+	}
+
+	artifactTypeEnum := ArtifactType(artifactType)
+	switch artifactTypeEnum {
+	case ARTIFACT_TYPE_FLOWER, ARTIFACT_TYPE_PLUME, ARTIFACT_TYPE_SANDS,
+		ARTIFACT_TYPE_GOBLET, ARTIFACT_TYPE_CIRCLET:
+	default:
+		return nil, ErrInvalidArtifactType
+	}
+
 	return &Artifact{
 		ID:          id,
-		ArtifactSet: artifactSet,
-		Type:        artifactType,
+		ArtifactSet: artifactSetEnum,
+		Type:        artifactTypeEnum,
 		Level:       level,
 		PrimaryStat: primaryStat,
 		Substats:    substats,
-	}
+	}, nil
 }
