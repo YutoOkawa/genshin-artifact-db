@@ -11,6 +11,9 @@ type MockArtifactGetter struct {
 
 	GetArtifactByTypeResponse []*entity.Artifact
 	GetArtifactByTypeError    error
+
+	GetArtifactBySetResponse []*entity.Artifact
+	GetArtifactBySetError    error
 }
 
 func (m *MockArtifactGetter) GetArtifactByID(id string) (*entity.Artifact, error) {
@@ -23,6 +26,10 @@ func (m *MockArtifactGetter) GetArtifactByTypeAndSet(artifactType entity.Artifac
 
 func (m *MockArtifactGetter) GetArtifactByType(artifactType entity.ArtifactType) ([]*entity.Artifact, error) {
 	return m.GetArtifactByTypeResponse, m.GetArtifactByTypeError
+}
+
+func (m *MockArtifactGetter) GetArtifactBySet(artifactSet entity.ArtifactSet) ([]*entity.Artifact, error) {
+	return m.GetArtifactBySetResponse, m.GetArtifactBySetError
 }
 
 type MockArtifactSaver struct {

@@ -64,6 +64,21 @@ func (repo *InMemoryArtifactRepository) GetArtifactByType(artifactType entity.Ar
 	return result, nil
 }
 
+func (repo *InMemoryArtifactRepository) GetArtifactBySet(artifactSet entity.ArtifactSet) ([]*entity.Artifact, error) {
+	var result []*entity.Artifact
+	for _, artifact := range repo.Artifacts {
+		if artifact.ArtifactSet == artifactSet {
+			result = append(result, artifact)
+		}
+	}
+
+	if len(result) == 0 {
+		return nil, ErrArtifactNotFound
+	}
+
+	return result, nil
+}
+
 func (repo *InMemoryArtifactRepository) SaveArtifact(artifact *entity.Artifact) error {
 	if artifact == nil {
 		return ErrArtifactIsNil
