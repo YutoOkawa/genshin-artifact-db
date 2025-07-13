@@ -1,0 +1,32 @@
+package handler
+
+import (
+	"errors"
+	"genshin-artifact-db/pkg/repository"
+	"genshin-artifact-db/pkg/service"
+
+	"github.com/gin-gonic/gin"
+)
+
+func GetArtifact(service service.GetArtifactServiceInterface) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		artifactID := c.Param("id")
+
+		artifact, err := service.GetArtifact(artifactID)
+		if err != nil {
+			if errors.Is(err, repository.ErrArtifactNotFound) {
+				c.JSON(404, gin.H{"error": err.Error()})
+				return
+			} else {
+				c.JSON(500, gin.H{"error": "Internal server error"})
+				return
+			}
+		}
+
+		c.JSON(200, artifact)
+	}
+}
+
+func GetArtifacts(service service.GetArtifactsServiceInterface) {}
+
+func CreateArtifact(service service.CreateArtifactServiceInterface) {}
