@@ -1,4 +1,4 @@
-module genshin-artifact-db
+module github.com/YutoOkawa/genshin-artifact-db
 
 go 1.23.9
 

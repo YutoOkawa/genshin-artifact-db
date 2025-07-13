@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"genshin-artifact-db/pkg/repository"
-	"genshin-artifact-db/pkg/service"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-cmp/cmp"

@@ -2,9 +2,10 @@ package service
 
 import (
 	"fmt"
-	"genshin-artifact-db/pkg/entity"
-	"genshin-artifact-db/pkg/repository"
 	"testing"
+
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
 
 	"github.com/google/go-cmp/cmp"
 )

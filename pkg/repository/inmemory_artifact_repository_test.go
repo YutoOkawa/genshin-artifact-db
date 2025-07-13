@@ -2,8 +2,9 @@ package repository
 
 import (
 	"errors"
-	"genshin-artifact-db/pkg/entity"
 	"testing"
+
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
 )
 
 func TestInMemoryArtifactRepositoryGetArtifactByID(t *testing.T) {

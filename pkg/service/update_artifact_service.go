@@ -1,8 +1,8 @@
 package service
 
 import (
-	"genshin-artifact-db/pkg/entity"
-	"genshin-artifact-db/pkg/repository"
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
 )
 
 type CreateArtifactServiceInterface interface {

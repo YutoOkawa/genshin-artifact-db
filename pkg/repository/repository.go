@@ -1,6 +1,6 @@
 package repository
 
-import "genshin-artifact-db/pkg/entity"
+import "github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
 
 type ArtifactGetter interface {
 	GetArtifactByID(id string) (*entity.Artifact, error)

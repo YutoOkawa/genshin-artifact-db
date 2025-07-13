@@ -2,8 +2,9 @@ package handler
 
 import (
 	"errors"
-	"genshin-artifact-db/pkg/repository"
-	"genshin-artifact-db/pkg/service"
+
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/service"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,6 +1,6 @@
 package repository
 
-import "genshin-artifact-db/pkg/entity"
+import "github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
 
 type MockArtifactGetter struct {
 	GetArtifactByIDResponse *entity.Artifact

@@ -2,7 +2,8 @@ package repository
 
 import (
 	"errors"
-	"genshin-artifact-db/pkg/entity"
+
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/entity"
 )
 
 var (
