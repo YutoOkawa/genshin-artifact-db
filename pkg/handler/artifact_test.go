@@ -79,7 +79,7 @@ func TestGetArtifact(t *testing.T) {
 			artifactID: "test-id",
 
 			expectedStatusCode: 500,
-			expectedResponse:   `{"error":"Internal server error"}`,
+			expectedResponse:   `{"error":"Internal server error: internal server error"}`,
 		},
 	}
 
@@ -171,7 +171,7 @@ func TestGetArtifactsByType(t *testing.T) {
 			artifactType: "test-type",
 
 			expectedStatusCode: 500,
-			expectedResponse:   `{"error":"Internal server error"}`,
+			expectedResponse:   `{"error":"Internal server error: internal server error"}`,
 		},
 	}
 
@@ -261,7 +261,7 @@ func TestGetArtifactsBySet(t *testing.T) {
 			artifactSet: "test-set",
 
 			expectedStatusCode: 500,
-			expectedResponse:   `{"error":"Internal server error"}`,
+			expectedResponse:   `{"error":"Internal server error: internal server error"}`,
 		},
 	}
 
@@ -355,7 +355,7 @@ func TestGetArtifactsByTypeAndSet(t *testing.T) {
 			artifactSet:  "test-set",
 
 			expectedStatusCode: 500,
-			expectedResponse:   `{"error":"Internal server error"}`,
+			expectedResponse:   `{"error":"Internal server error: internal server error"}`,
 		},
 	}
 
