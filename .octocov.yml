@@ -1,0 +1,13 @@
+# octocov configuration
+# https://github.com/k1LoW/octocov
+
+coverage:
+  paths:
+    - coverage.out
+
+comment:
+  enable: true
+  hideFooterLink: false
+
+summary:
+  enable: true
