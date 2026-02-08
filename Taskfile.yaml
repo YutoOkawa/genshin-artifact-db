@@ -1,0 +1,69 @@
+version: '3'
+
+vars:
+  APP_NAME: genshin-artifact-db
+  IMAGE_NAME: genshin-artifact-db
+
+tasks:
+  default:
+    desc: 利用可能なタスク一覧を表示
+    cmds:
+      - task --list
+
+  # 開発タスク
+  build:
+    desc: アプリケーションをビルド
+    cmds:
+      - go build -o {{.APP_NAME}} ./cmd/{{.APP_NAME}}
+
+  run:
+    desc: アプリケーションをローカルで起動
+    cmds:
+      - go run ./cmd/{{.APP_NAME}}/main.go {{.CLI_ARGS}}
+
+  test:
+    desc: 全テストを実行
+    cmds:
+      - go test ./...
+
+  test:verbose:
+    desc: 全テストを詳細表示で実行
+    cmds:
+      - go test -v ./...
+
+  test:coverage:
+    desc: カバレッジ付きでテストを実行
+    cmds:
+      - go test -cover ./...
+
+  # Docker タスク
+  docker:build:
+    desc: Docker イメージをビルド
+    cmds:
+      - docker build -t {{.IMAGE_NAME}} .
+
+  docker:run:
+    desc: Docker コンテナを起動
+    cmds:
+      - docker run -p 8080:8080 {{.IMAGE_NAME}}
+
+  # Docker Compose タスク
+  compose:up:
+    desc: docker compose でサービスを起動
+    cmds:
+      - docker compose up -d
+
+  compose:down:
+    desc: docker compose でサービスを停止
+    cmds:
+      - docker compose down
+
+  compose:logs:
+    desc: docker compose のログを表示
+    cmds:
+      - docker compose logs -f
+
+  clean:
+    desc: ビルド成果物を削除
+    cmds:
+      - rm -f {{.APP_NAME}}

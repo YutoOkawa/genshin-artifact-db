@@ -1,11 +1,13 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/YutoOkawa/genshin-artifact-db/pkg/config"
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/handler"
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/repository"
 	"github.com/YutoOkawa/genshin-artifact-db/pkg/server"
@@ -14,8 +16,29 @@ import (
 )
 
 func main() {
+	configPath := flag.String("config", config.DefaultConfigPath, "設定ファイルのパス")
+	portFlag := flag.String("port", "", "サーバーポート (設定ファイルを上書き)")
+	dataFlag := flag.String("data", "", "データファイルパス (設定ファイルを上書き)")
+	flag.Parse()
+
+	cfg, err := config.LoadConfig(*configPath)
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+
+	if *portFlag != "" {
+		cfg.Port = *portFlag
+	}
+	if *dataFlag != "" {
+		cfg.DataFilePath = *dataFlag
+	}
+
+	log.Printf("Starting server with config: port=%s, data_file=%s", cfg.Port, cfg.DataFilePath)
+
 	artifactRepository := repository.NewInMemoryArtifactRepository()
-	artifactRepository.LoadJSONFile("artifacts.json")
+	if err := artifactRepository.LoadJSONFile(cfg.DataFilePath); err != nil {
+		log.Printf("Warning: Failed to load data file: %v", err)
+	}
 
 	getArtifactService := service.NewGetArtifactService(artifactRepository)
 	createArtifactService := service.NewUpdateArtifactService(artifactRepository)
@@ -28,7 +51,7 @@ func main() {
 
 	r.POST("/artifact", handler.CreateArtifact(createArtifactService))
 
-	serve := server.NewServer(":8080", r, 1)
+	serve := server.NewServer(cfg.Port, r, 1)
 	serverCh := serve.Start()
 
 	quit := make(chan os.Signal, 1)
@@ -37,7 +60,7 @@ func main() {
 	for {
 		select {
 		case <-quit:
-			if err := artifactRepository.SaveJSONFile("artifacts.json"); err != nil {
+			if err := artifactRepository.SaveJSONFile(cfg.DataFilePath); err != nil {
 				log.Fatalf("Failed to save artifacts: %v", err)
 			}
 			serve.Shutdown()

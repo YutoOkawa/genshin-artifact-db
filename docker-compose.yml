@@ -1,0 +1,8 @@
+services:
+  genshin-artifact-db:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/var/lib/genshin-artifact-db
+      - ./config:/etc/config/genshin-artifact-db
